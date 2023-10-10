@@ -16,10 +16,10 @@ func GetDBCollection(col string) *mongo.Collection {
 }
 
 func InitDB() error {
-	// Conecatandose a  MongoDB
+	// Connecting to MongoDB
 	uri := os.Getenv("CONNECTION_STRING")
 	if uri == "" {
-		return errors.New("error al obtener la variable de entorno 'CONNECTION_STRING' ")
+		return errors.New("error to get enviroment 'CONNECTION_STRING' ")
 	}
 	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(uri))
 	if err != nil {
@@ -29,7 +29,7 @@ func InitDB() error {
 	// Inicializando la base de datos
 	db_name := os.Getenv("DB_NAME")
 	if db_name == "" {
-		return errors.New("error al obtener la variable de entorno 'DB_NAME' ")
+		return errors.New("error to get enviroment 'DB_NAME' ")
 	}
 
 	db = client.Database(db_name)

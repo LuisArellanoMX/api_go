@@ -9,10 +9,11 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/joho/godotenv"
 )
 
 func main() {
-	err := run() 
+	err := run()
 
 	if err != nil {
 		panic(err)
@@ -20,8 +21,8 @@ func main() {
 }
 
 func run() error {
-	// init env
-	err := common.LoadEnv()
+	// Init env
+	err := godotenv.Load()
 	if err != nil {
 		return err
 	}
