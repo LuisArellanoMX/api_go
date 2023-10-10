@@ -8,21 +8,21 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func AddBookGroup(app *fiber.App) {
-	bookGroup := app.Group("/books")
+func AddIcecreamGroup(app *fiber.App) {
+	icecreamGroup := app.Group("/icecream")
 
-	bookGroup.Get("/", getBooks)
-	bookGroup.Get("/:id", getBook)
-	bookGroup.Post("/", createBook)
-	bookGroup.Put("/:id", updateBook)
-	bookGroup.Delete("/:id", deleteBook)
+	icecreamGroup.Get("/", getIcecreams)
+	icecreamGroup.Get("/:id", getIcecream)
+	icecreamGroup.Post("/", createIcecream)
+	icecreamGroup.Put("/:id", updateIcecream)
+	icecreamGroup.Delete("/:id", deleteIcecream)
 }
 
-func getBooks(c *fiber.Ctx) error {
-	coll := common.GetDBCollection("books")
+func getIcecreams(c *fiber.Ctx) error {
+	coll := common.GetDBCollection("icecreams")
 
-	// find all books
-	books := make([]models.Book, 0)
+	// Find all icecreams
+	icecreams := make([]models.Icecream, 0)
 	cursor, err := coll.Find(c.Context(), bson.M{})
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{
@@ -30,147 +30,147 @@ func getBooks(c *fiber.Ctx) error {
 		})
 	}
 
-	// iterate over the cursor
+	// Iterate over the cursor
 	for cursor.Next(c.Context()) {
-		book := models.Book{}
-		err := cursor.Decode(&book)
+		icecream := models.Icecream{}
+		err := cursor.Decode(&icecream)
 		if err != nil {
 			return c.Status(500).JSON(fiber.Map{
 				"error": err.Error(),
 			})
 		}
-		books = append(books, book)
+		icecreams = append(icecreams, icecream)
 	}
 
-	return c.Status(200).JSON(fiber.Map{"data": books})
+	return c.Status(200).JSON(fiber.Map{"data": icecreams})
 }
 
-func getBook(c *fiber.Ctx) error {
-	coll := common.GetDBCollection("books")
+func getIcecream(c *fiber.Ctx) error {
+	coll := common.GetDBCollection("icecreams")
 
-	// find the book
+	// Find the icecream  by id
 	id := c.Params("id")
 	if id == "" {
 		return c.Status(400).JSON(fiber.Map{
-			"error": "id is required",
+			"error": "id is required :(",
 		})
 	}
 	objectId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return c.Status(400).JSON(fiber.Map{
-			"error": "invalid id",
+			"error": "invalid id :(",
 		})
 	}
 
-	book := models.Book{}
+	icecream := models.Icecream{}
 
-	err = coll.FindOne(c.Context(), bson.M{"_id": objectId}).Decode(&book)
+	err = coll.FindOne(c.Context(), bson.M{"_id": objectId}).Decode(&icecream)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"error": err.Error(),
 		})
 	}
 
-	return c.Status(200).JSON(fiber.Map{"data": book})
+	return c.Status(200).JSON(fiber.Map{"data": icecream})
 }
 
+// Create a new structure to help us create a new document
 type createDTO struct {
-	Title  string `json:"title" bson:"title"`
-	Author string `json:"author" bson:"author"`
-	Year   string `json:"year" bson:"year"`
+	Flavor string `json:"flavor" bson:"flavor"`
+	Stock  string `json:"stock" bson:"stock"`
 }
 
-func createBook(c *fiber.Ctx) error {
-	// validate the body
+func createIcecream(c *fiber.Ctx) error {
+	// Validate the body
 	b := new(createDTO)
 	if err := c.BodyParser(b); err != nil {
 		return c.Status(400).JSON(fiber.Map{
-			"error": "Invalid body",
+			"error": "Invalid body :(",
 		})
 	}
 
-	// create the book
-	coll := common.GetDBCollection("books")
+	// Create the new icecream
+	coll := common.GetDBCollection("icecreams")
 	result, err := coll.InsertOne(c.Context(), b)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{
-			"error":   "Failed to create book",
+			"error":   "Failed to create icecream :(",
 			"message": err.Error(),
 		})
 	}
 
-	// return the book
+	// Return the icecream
 	return c.Status(201).JSON(fiber.Map{
 		"result": result,
 	})
 }
 
+// Create a new structure to help us update a document
 type updateDTO struct {
-	Title  string `json:"title,omitempty" bson:"title,omitempty"`
-	Author string `json:"author,omitempty" bson:"author,omitempty"`
-	Year   string `json:"year,omitempty" bson:"year,omitempty"`
+	Flavor string `json:"flavor,omitempty" bson:"flavor,omitempty"`
+	Stock  string `json:"stock,omitempty" bson:"stock,omitempty"`
 }
 
-func updateBook(c *fiber.Ctx) error {
-	// validate the body
+func updateIcecream(c *fiber.Ctx) error {
+	// Validate the body
 	b := new(updateDTO)
 	if err := c.BodyParser(b); err != nil {
 		return c.Status(400).JSON(fiber.Map{
-			"error": "Invalid body",
+			"error": "Invalid body :(",
 		})
 	}
 
-	// get the id
+	// Get the id of params
 	id := c.Params("id")
 	if id == "" {
 		return c.Status(400).JSON(fiber.Map{
-			"error": "id is required",
+			"error": "id is required :(",
 		})
 	}
 	objectId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return c.Status(400).JSON(fiber.Map{
-			"error": "invalid id",
+			"error": "invalid id :(",
 		})
 	}
 
-	// update the book
-	coll := common.GetDBCollection("books")
+	// Update the icecream
+	coll := common.GetDBCollection("icecreams")
 	result, err := coll.UpdateOne(c.Context(), bson.M{"_id": objectId}, bson.M{"$set": b})
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{
-			"error":   "Failed to update book",
+			"error":   "Failed to update icecream :(",
 			"message": err.Error(),
 		})
 	}
 
-	// return the book
+	// Return the icecream
 	return c.Status(200).JSON(fiber.Map{
 		"result": result,
 	})
 }
 
-func deleteBook(c *fiber.Ctx) error {
-	// get the id
+func deleteIcecream(c *fiber.Ctx) error {
+	// Get the id of params
 	id := c.Params("id")
 	if id == "" {
 		return c.Status(400).JSON(fiber.Map{
-			"error": "id is required",
+			"error": "id is required :(",
 		})
 	}
 	objectId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return c.Status(400).JSON(fiber.Map{
-			"error": "invalid id",
+			"error": "invalid id :(",
 		})
 	}
 
-	// delete the book
-	coll := common.GetDBCollection("books")
+	// Delete the icecream
+	coll := common.GetDBCollection("icecreams")
 	result, err := coll.DeleteOne(c.Context(), bson.M{"_id": objectId})
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{
-			"error":   "Failed to delete book",
+			"error":   "Failed to delete icecream :(",
 			"message": err.Error(),
 		})
 	}

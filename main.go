@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	err := run()
+	err := run() 
 
 	if err != nil {
 		panic(err)
@@ -26,27 +26,27 @@ func run() error {
 		return err
 	}
 
-	// init db
+	// Init db
 	err = common.InitDB()
 	if err != nil {
 		return err
 	}
 
-	// defer closing db
+	// Defer closing db
 	defer common.CloseDB()
 
-	// create app
+	// Create app
 	app := fiber.New()
 
-	// add basic middleware
+	// Add basic configurations
 	app.Use(logger.New())
 	app.Use(recover.New())
 	app.Use(cors.New())
 
-	// add routes
-	router.AddBookGroup(app)
+	// Add routes
+	router.AddIcecreamGroup(app)
 
-	// start server
+	// Start server
 	var port string
 	if port = os.Getenv("PORT"); port == "" {
 		port = "8080"
