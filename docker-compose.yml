@@ -1,0 +1,12 @@
+version: '3.9'
+services:
+  go_app:
+    build: .
+    ports:
+      - "3000:3000"
+    links:
+      - go_mongo
+  go_mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
